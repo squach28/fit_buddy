@@ -1,4 +1,5 @@
 import 'package:fit_buddy/views/HomePage.dart';
+import 'package:fit_buddy/views/SignupPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,10 +11,13 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   final _loginFormKey = GlobalKey<FormState>();
+    final emailFocusNode = FocusNode();
+final passwordFocusNode = FocusNode();
 
   Widget _loginPageHeader() {
     return Padding(
-        padding: EdgeInsets.only(left: 25.0, top: 10.0, bottom: 20.0, right: 20.0),
+        padding:
+            EdgeInsets.only(left: 25.0, top: 50.0, bottom: 20.0, right: 20.0),
         child: Text('Log In', style: TextStyle(fontSize: 25.0)));
   }
 
@@ -22,11 +26,11 @@ class LoginPageState extends State<LoginPage> {
         key: _loginFormKey,
         child: Padding(
             padding: EdgeInsets.only(left: 20.0, right: 20.0),
-            child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextFormField(
+                    focusNode: emailFocusNode,
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
                       filled: true,
@@ -39,6 +43,7 @@ class LoginPageState extends State<LoginPage> {
                   ),
                   SizedBox(height: 25.0),
                   TextFormField(
+                    focusNode: passwordFocusNode,
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
                       filled: true,
@@ -114,7 +119,7 @@ class LoginPageState extends State<LoginPage> {
                           elevation: 5.0)),
                 ],
               ),
-            )));
+            ));
   }
 
   Widget _signUpText() {
@@ -122,7 +127,15 @@ class LoginPageState extends State<LoginPage> {
         padding: EdgeInsets.only(left: 20.0, right: 20.0),
         child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           Text("Don't have an account?"),
-          TextButton(child: Text('Sign Up', style: TextStyle(color: Color(0xff567551))), onPressed: () {}),
+          TextButton(
+              child:
+                  Text('Sign Up', style: TextStyle(color: Color(0xff567551))),
+              onPressed: () {
+                emailFocusNode.unfocus();
+                passwordFocusNode.unfocus();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SignupPage()));
+              }),
         ]));
   }
 
@@ -130,7 +143,10 @@ class LoginPageState extends State<LoginPage> {
     return Padding(
         padding: EdgeInsets.only(left: 10.0, right: 20.0),
         child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          TextButton(child: Text('Forgot your password?', style: TextStyle(color: Color(0xff567551))), onPressed: () {}),
+          TextButton(
+              child: Text('Forgot your password?',
+                  style: TextStyle(color: Color(0xff567551))),
+              onPressed: () {}),
         ]));
   }
 
@@ -148,7 +164,9 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
+        body: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -158,6 +176,6 @@ class LoginPageState extends State<LoginPage> {
         _signUpText(),
         _forgotPasswordText(),
       ],
-    ));
+    )));
   }
 }
