@@ -11,6 +11,12 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final _loginFormKey = GlobalKey<FormState>();
 
+  Widget _loginPageHeader() {
+    return Padding(
+        padding: EdgeInsets.only(left: 25.0, top: 10.0, bottom: 20.0, right: 20.0),
+        child: Text('Log In', style: TextStyle(fontSize: 25.0)));
+  }
+
   Widget _loginForm() {
     return Form(
         key: _loginFormKey,
@@ -90,17 +96,17 @@ class LoginPageState extends State<LoginPage> {
                   Container(
                       width: double.infinity,
                       child: SignInButton(Buttons.Google,
-                          text: 'Log in with Google',
-                          onPressed: () async{
-                            googleSignIn().then((value) {
-                              if(value == null) {
-
-                              } else {
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-                              }
-                            });
-
-                          },
+                          text: 'Log in with Google', onPressed: () async {
+                        googleSignIn().then((value) {
+                          if (value == null) {
+                          } else {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage()));
+                          }
+                        });
+                      },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                             side: BorderSide(width: 0, style: BorderStyle.none),
@@ -111,12 +117,20 @@ class LoginPageState extends State<LoginPage> {
             )));
   }
 
-  Widget _signUpButton() {
+  Widget _signUpText() {
     return Padding(
         padding: EdgeInsets.only(left: 20.0, right: 20.0),
-        child: Row(children: [
+        child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           Text("Don't have an account?"),
-          TextButton(child: Text('Sign Up'), onPressed: () {}),
+          TextButton(child: Text('Sign Up', style: TextStyle(color: Color(0xff567551))), onPressed: () {}),
+        ]));
+  }
+
+  Widget _forgotPasswordText() {
+    return Padding(
+        padding: EdgeInsets.only(left: 10.0, right: 20.0),
+        child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+          TextButton(child: Text('Forgot your password?', style: TextStyle(color: Color(0xff567551))), onPressed: () {}),
         ]));
   }
 
@@ -136,10 +150,13 @@ class LoginPageState extends State<LoginPage> {
     return Scaffold(
         body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _loginPageHeader(),
         _loginForm(),
         SizedBox(height: 25.0),
-        _signUpButton(),
+        _signUpText(),
+        _forgotPasswordText(),
       ],
     ));
   }
