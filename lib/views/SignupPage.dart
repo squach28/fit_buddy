@@ -8,6 +8,12 @@ class SignupPage extends StatefulWidget {
 class SignupPageState extends State<SignupPage> {
   final _signupFormKey = GlobalKey<FormState>();
   final focusScopeNode = FocusScopeNode();
+  final _scrollController = ScrollController();
+
+  void scrollDown() {
+    _scrollController.animateTo(100,
+        duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+  }
 
   Widget _signupPageHeader() {
     return Padding(
@@ -16,7 +22,8 @@ class SignupPageState extends State<SignupPage> {
         child: Text('Sign Up', style: TextStyle(fontSize: 25.0)));
   }
 
-  Widget _signupForm() { // TODO focus text field on next tap
+  Widget _signupForm() {
+    // TODO focus text field on next tap
     return Form(
         key: _signupFormKey,
         child: Padding(
@@ -52,7 +59,11 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
-                    onEditingComplete: focusScopeNode.nextFocus,
+                    onEditingComplete: () {
+                    focusScopeNode.nextFocus();
+                    scrollDown();
+                    },
+                    
                   ),
                   SizedBox(height: 25.0),
                   TextFormField(
@@ -67,6 +78,7 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
+                    onEditingComplete: focusScopeNode.nextFocus,
                   ),
                   SizedBox(height: 25.0),
                   TextFormField(
@@ -81,7 +93,6 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
-                    onEditingComplete: focusScopeNode.nextFocus,
                   ),
                   SizedBox(height: 50.0),
                   Material(
@@ -126,7 +137,8 @@ class SignupPageState extends State<SignupPage> {
           elevation: 0,
         ),
         body: SingleChildScrollView(
-            physics: NeverScrollableScrollPhysics(),
+            controller: _scrollController,
+            physics: ClampingScrollPhysics(),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
