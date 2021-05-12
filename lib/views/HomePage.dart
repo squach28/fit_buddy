@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  @override 
+  @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-  @override 
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text('Home Screen!'))
-    );
+    return Scaffold(body: Center(child: Text('Home Screen!')));
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:email_validator/email_validator.dart';
 class SignupPage extends StatefulWidget {
   @override
   SignupPageState createState() => SignupPageState();
@@ -8,12 +8,10 @@ class SignupPage extends StatefulWidget {
 class SignupPageState extends State<SignupPage> {
   final _signupFormKey = GlobalKey<FormState>();
   final focusScopeNode = FocusScopeNode();
+  final _passwordController = TextEditingController();
   final _scrollController = ScrollController();
+  AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
 
-  void scrollDown() {
-    _scrollController.animateTo(100,
-        duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-  }
 
   Widget _signupPageHeader() {
     return Padding(
@@ -23,9 +21,9 @@ class SignupPageState extends State<SignupPage> {
   }
 
   Widget _signupForm() {
-    // TODO focus text field on next tap
     return Form(
         key: _signupFormKey,
+        autovalidateMode: _autoValidateMode,
         child: Padding(
             padding: EdgeInsets.only(left: 20.0, right: 20.0),
             child: FocusScope(
@@ -45,6 +43,7 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
+                    validator: validateFirstName,
                     onEditingComplete: focusScopeNode.nextFocus,
                   ),
                   SizedBox(height: 25.0),
@@ -59,14 +58,15 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
+                    validator: validateEmail,
                     onEditingComplete: () {
-                    focusScopeNode.nextFocus();
-                    scrollDown();
+                      focusScopeNode.nextFocus();
+                      scrollDown();
                     },
-                    
                   ),
                   SizedBox(height: 25.0),
                   TextFormField(
+                    controller: _passwordController,
                     textInputAction: TextInputAction.next,
                     obscureText: true,
                     decoration: InputDecoration(
@@ -78,6 +78,7 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
+                    validator: validatePassword,
                     onEditingComplete: focusScopeNode.nextFocus,
                   ),
                   SizedBox(height: 25.0),
@@ -93,6 +94,7 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
+                    validator: validateConfirmPassword,
                   ),
                   SizedBox(height: 50.0),
                   Material(
@@ -118,11 +120,63 @@ class SignupPageState extends State<SignupPage> {
                                     width: 0, style: BorderStyle.none),
                               )),
                             ),
-                            onPressed: () {}),
+                            onPressed: validateFields),
                       )),
                 ],
               ),
             )));
+  }
+
+   void scrollDown() {
+    _scrollController.animateTo(100,
+        duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+  }
+
+  String validateFirstName(String value) {
+    if(value.isEmpty) {
+      return 'First name is required';
+    } else {
+      return null;
+    }
+  }
+
+  String validateEmail(String value) {
+    if(value.isEmpty) {
+      return 'Email is required';
+    } else if(!EmailValidator.validate(value)) {
+      return 'Email is not valid';
+    } else {
+      return null;
+    }
+  }
+
+  String validatePassword(String value) {
+    if(value.isEmpty) {
+      return 'Password is required';
+    } else {
+      return null;
+    }
+  }
+
+    String validateConfirmPassword(String value) {
+    final password = _passwordController.text;
+    if(value.isEmpty) {
+      return 'Confirm Password is required';
+    } else if(value != password) {
+      return 'Passwords do not match';
+    } else {
+      return null;
+    }
+  }
+
+  void validateFields() {
+    if(!_signupFormKey.currentState.validate()) {
+      setState(() {
+      _autoValidateMode = AutovalidateMode.onUserInteraction;
+      });
+
+    } else {
+    }
   }
 
   @override
