@@ -27,12 +27,13 @@ class SignupPageState extends State<SignupPage> {
 
   bool passwordValidated = false;
   bool confirmPasswordValidated = false;
+  bool signingUp = false;
 
   @override
   void initState() {
     super.initState();
-    _passwordController.addListener(validatePassword);
-    _confirmPasswordController.addListener(validateConfirmPassword);
+    _passwordController.addListener(validatePasswordLength);
+    _confirmPasswordController.addListener(validateMatchingPasswords);
   }
 
   @override
@@ -65,6 +66,8 @@ class SignupPageState extends State<SignupPage> {
                 children: [
                   TextFormField(
                     controller: _firstNameController,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
@@ -84,6 +87,7 @@ class SignupPageState extends State<SignupPage> {
                   SizedBox(height: 25.0),
                   TextFormField(
                     controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
@@ -114,6 +118,7 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
+                    validator: validatePassword,
                     onEditingComplete: () {
                       focusScopeNode.nextFocus();
                       scrollDown();
@@ -125,8 +130,8 @@ class SignupPageState extends State<SignupPage> {
                         Text('Password must be at least 6 characters'),
                         SizedBox(width: 5.0),
                         passwordValidated
-                            ? Icon(Icons.check)
-                            : Icon(Icons.clear),
+                            ? Icon(Icons.check, color: Colors.green)
+                            : Icon(Icons.clear, color: Colors.red),
                       ])),
                   SizedBox(height: 20.0),
                   TextFormField(
@@ -142,6 +147,7 @@ class SignupPageState extends State<SignupPage> {
                           borderSide:
                               BorderSide(width: 0, style: BorderStyle.none)),
                     ),
+                    validator: validateConfirmPassword,
                     onEditingComplete: () {
                       focusScopeNode.nextFocus();
                       scrollDown();
@@ -180,14 +186,26 @@ class SignupPageState extends State<SignupPage> {
                                     width: 0, style: BorderStyle.none),
                               )),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (validateFields()) {
                                 final firstName = _firstNameController.text;
                                 final email = _emailController.text;
                                 final password = _passwordController.text;
-
-                                authenticationService.signUp(
-                                    firstName, email, password);
+                                focusScopeNode.unfocus();
+                                SignUpResult signUpResult =
+                                    await authenticationService.signUp(
+                                        firstName, email, password);
+                                setState(() {
+                                  signingUp = true;
+                                });
+                                if (signUpResult != SignUpResult.SUCCESS) {
+                                  setState(() {
+                                    signingUp = false;
+                                  });
+                                  _showSignUpAlert(signUpResult);
+                                } else {
+                                  // navigate to home page
+                                }
                               }
                             }),
                       )),
@@ -195,38 +213,11 @@ class SignupPageState extends State<SignupPage> {
               ),
             )));
   }
+
 // TODO change scrollDown parameter to widget? center the screen based on the widget
   void scrollDown() {
     _scrollController.animateTo(100,
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-  }
-
-  void validatePassword() {
-    final passwordLength = _passwordController.text.length;
-    if (passwordLength >= 6) {
-      setState(() {
-        passwordValidated = true;
-      });
-    } else {
-      setState(() {
-        passwordValidated = false;
-      });
-    }
-  }
-
-  void validateConfirmPassword() {
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
-    print('password: ' + password + ' confirmPassword: ' + confirmPassword);
-    if (password == confirmPassword) {
-      setState(() {
-        confirmPasswordValidated = true;
-      });
-    } else {
-      setState(() {
-        confirmPasswordValidated = false;
-      });
-    }
   }
 
   String validateFirstName(String value) {
@@ -247,6 +238,58 @@ class SignupPageState extends State<SignupPage> {
     }
   }
 
+  String validatePassword(String value) {
+    if (value.length < 6) {
+      return '';
+    } else {
+      return null;
+    }
+  }
+
+  String validateConfirmPassword(String value) {
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+    if (password != confirmPassword) {
+      return '';
+    } else {
+      return null;
+    }
+  }
+
+  // method to constantly validate password length
+  void validatePasswordLength() {
+    final passwordLength = _passwordController.text.length;
+    if (passwordLength >= 6) {
+      setState(() {
+        passwordValidated = true;
+      });
+    } else {
+      setState(() {
+        passwordValidated = false;
+      });
+    }
+  }
+
+  // method to constantly validate matching passwords
+  void validateMatchingPasswords() {
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+    print('password: ' + password + ' confirmPassword: ' + confirmPassword);
+    if (password == confirmPassword) {
+      setState(() {
+        confirmPasswordValidated = true;
+      });
+    } else if (confirmPassword.isEmpty) {
+      setState(() {
+        confirmPasswordValidated = false;
+      });
+    } else {
+      setState(() {
+        confirmPasswordValidated = false;
+      });
+    }
+  }
+
   bool validateFields() {
     if (!_signupFormKey.currentState.validate()) {
       setState(() {
@@ -255,6 +298,104 @@ class SignupPageState extends State<SignupPage> {
       return false;
     } else {
       return true;
+    }
+  }
+
+  Future<void> _showSignUpAlert(SignUpResult signUpResult) {
+    switch (signUpResult) {
+      case SignUpResult.WEAK_PASSWORD:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Weak Password'),
+                  content: Text('Password must be 6 characters or more'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          setState(() {
+                            signingUp = false;
+                          });
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
+      case SignUpResult.EMAIL_IN_USE:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Email in Use'),
+                  content: Text('Email is already used'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
+
+      case SignUpResult.FAIL:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Account Creation Failed'),
+                  content: Text('Please try again'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
+
+      default:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Account Creation Failed'),
+                  content: Text('Please try again'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
     }
   }
 
@@ -272,12 +413,20 @@ class SignupPageState extends State<SignupPage> {
         body: SingleChildScrollView(
             controller: _scrollController,
             physics: ClampingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                _signupPageHeader(),
-                _signupForm(),
+                Center(
+                    child: Opacity(
+                        opacity: signingUp ? 1.0 : 0.0,
+                        child: CircularProgressIndicator())),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _signupPageHeader(),
+                    _signupForm(),
+                  ],
+                )
               ],
             )));
   }
