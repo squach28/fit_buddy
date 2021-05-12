@@ -10,9 +10,10 @@ class AuthenticationService {
    
      return: SignUpResult - result of the sign up process (SUCCESS, WEAK_PASSWORD, EMAIL_IN_USE, FAIL)
   */
-  Future<SignUpResult> _signUp(String firstName, String email, String password) async{
+  Future<SignUpResult> signUp(String firstName, String email, String password) async{
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(email: email, password: password);
+      auth.currentUser.updateProfile(displayName: firstName);
       return SignUpResult.SUCCESS;
     } on FirebaseAuthException catch(e) {
       print(e);
@@ -25,5 +26,6 @@ class AuthenticationService {
       print(e);
       return SignUpResult.FAIL;
     }
+    return SignUpResult.FAIL;
   }
 }
