@@ -28,6 +28,7 @@ class SignupPageState extends State<SignupPage> {
   bool passwordValidated = false;
   bool confirmPasswordValidated = false;
   bool signingUp = false;
+  bool confirmPasswordFocused = false;
 
   @override
   void initState() {
@@ -81,7 +82,7 @@ class SignupPageState extends State<SignupPage> {
                     validator: validateFirstName,
                     onEditingComplete: () {
                       focusScopeNode.nextFocus();
-                      scrollDown();
+                      scrollDown(focusScopeNode.focusedChild.rect.height);
                     },
                   ),
                   SizedBox(height: 25.0),
@@ -101,7 +102,7 @@ class SignupPageState extends State<SignupPage> {
                     validator: validateEmail,
                     onEditingComplete: () {
                       focusScopeNode.nextFocus();
-                      scrollDown();
+                      scrollDown(200.0);
                     },
                   ),
                   SizedBox(height: 25.0),
@@ -121,10 +122,11 @@ class SignupPageState extends State<SignupPage> {
                     validator: validatePassword,
                     onEditingComplete: () {
                       focusScopeNode.nextFocus();
-                      scrollDown();
+                      scrollDown(200.0);
                     },
                   ),
                   Padding(
+                      
                       padding: EdgeInsets.only(top: 5.0, bottom: 1.0),
                       child: Row(children: [
                         Text('Password must be at least 6 characters'),
@@ -135,6 +137,11 @@ class SignupPageState extends State<SignupPage> {
                       ])),
                   SizedBox(height: 20.0),
                   TextFormField(
+                    onTap: () {
+                      setState(() {
+confirmPasswordFocused = true;
+                      });
+                    },
                     controller: _confirmPasswordController,
                     textInputAction: TextInputAction.done,
                     obscureText: true,
@@ -150,7 +157,9 @@ class SignupPageState extends State<SignupPage> {
                     validator: validateConfirmPassword,
                     onEditingComplete: () {
                       focusScopeNode.nextFocus();
-                      scrollDown();
+                      setState(() {
+                        confirmPasswordFocused = false;
+                      });
                     },
                   ),
                   Padding(
@@ -162,6 +171,7 @@ class SignupPageState extends State<SignupPage> {
                             ? Icon(Icons.check, color: Colors.green)
                             : Icon(Icons.clear, color: Colors.red),
                       ])),
+                  SizedBox(height: confirmPasswordFocused ? 100.0 : 0),
                   SizedBox(height: 40.0),
                   Material(
                       elevation: 12.0,
@@ -215,8 +225,8 @@ class SignupPageState extends State<SignupPage> {
   }
 
 // TODO change scrollDown parameter to widget? center the screen based on the widget
-  void scrollDown() {
-    _scrollController.animateTo(100,
+  void scrollDown(double height) {
+    _scrollController.animateTo(height,
         duration: Duration(milliseconds: 200), curve: Curves.easeIn);
   }
 
@@ -275,17 +285,17 @@ class SignupPageState extends State<SignupPage> {
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
     print('password: ' + password + ' confirmPassword: ' + confirmPassword);
-    if (password == confirmPassword) {
+    if (confirmPassword.isEmpty) {
       setState(() {
-        confirmPasswordValidated = true;
+        confirmPasswordValidated = false;
       });
-    } else if (confirmPassword.isEmpty) {
+    } else if (password != confirmPassword) {
       setState(() {
         confirmPasswordValidated = false;
       });
     } else {
       setState(() {
-        confirmPasswordValidated = false;
+        confirmPasswordValidated = true;
       });
     }
   }
