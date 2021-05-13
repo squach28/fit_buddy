@@ -1,3 +1,4 @@
+import 'package:fit_buddy/views/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fit_buddy/services/AuthenticationService.dart';
@@ -215,6 +216,7 @@ confirmPasswordFocused = true;
                                   _showSignUpAlert(signUpResult);
                                 } else {
                                   // navigate to home page
+                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
                                 }
                               }
                             }),

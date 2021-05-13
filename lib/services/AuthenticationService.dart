@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fit_buddy/models/SignInResult.dart';
 import 'package:fit_buddy/models/SignUpResult.dart';
 class AuthenticationService {
   final auth = FirebaseAuth.instance;
@@ -27,5 +28,25 @@ class AuthenticationService {
       return SignUpResult.FAIL;
     }
     return SignUpResult.FAIL;
+  }
+
+  Future<SignInResult> logIn(String email, String password) async {
+    try {
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password
+      );
+      return SignInResult.SUCCESS;
+    } on FirebaseAuthException catch(e) {
+      if(e.code == 'user-not-found') {
+        return SignInResult.USER_NOT_FOUND;
+      } else if(e.code == 'wrong-password') {
+        return SignInResult.WRONG_PASSWORD;
+      } else {
+        return SignInResult.FAIL;
+      }
+    } on Exception catch(e) {
+      return SignInResult.FAIL;
+    }
   }
 }
