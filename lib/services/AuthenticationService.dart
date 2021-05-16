@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fit_buddy/models/SignInResult.dart';
 import 'package:fit_buddy/models/SignUpResult.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 class AuthenticationService {
   final auth = FirebaseAuth.instance;
 
@@ -30,7 +31,7 @@ class AuthenticationService {
     return SignUpResult.FAIL;
   }
 
-  Future<SignInResult> logIn(String email, String password) async {
+  Future<SignInResult> signIn(String email, String password) async {
     try {
       UserCredential userCredential = await auth.signInWithEmailAndPassword(
         email: email,
@@ -48,5 +49,33 @@ class AuthenticationService {
     } on Exception catch(e) {
       return SignInResult.FAIL;
     }
+  }
+
+  Future<UserCredential> googleSignin() async {
+    try {
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    
+
+    return await auth.signInWithCredential(credential);
+    } catch (Exception) {
+      return null;
+    }
+  }
+
+  Future<GoogleSignInAccount> googleSignOut() async {
+    return await GoogleSignIn().signOut();
+  }
+
+  
+
+  Future<void> signOut() async {
+    await auth.signOut();
   }
 }

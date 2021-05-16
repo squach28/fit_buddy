@@ -22,6 +22,8 @@ class LoginPageState extends State<LoginPage> {
 
   final authenticationService = AuthenticationService();
 
+  bool loggingIn = false;
+
   Widget _loginPageHeader() {
     return Padding(
         padding:
@@ -40,7 +42,7 @@ class LoginPageState extends State<LoginPage> {
             children: [
               TextFormField(
                 controller: _emailController,
-                 keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.emailAddress,
                 validator: validateEmail,
                 focusNode: emailFocusNode,
                 decoration: InputDecoration(
@@ -77,7 +79,7 @@ class LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     height: 50.0,
                     child: TextButton(
-                        child: Text('Log In',
+                        child: Text('Sign In',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18.0,
@@ -93,23 +95,34 @@ class LoginPageState extends State<LoginPage> {
                           )),
                         ),
                         onPressed: () async {
-                          if(!validateFields()) {
-
+                          if (!validateFields()) {
                           } else {
                             final email = _emailController.text;
                             final password = _passwordController.text;
-                            SignInResult signInResult = await authenticationService.logIn(email, password);
+                            SignInResult signInResult =
+                                await authenticationService.signIn(
+                                    email, password);
+                            setState(() {
+                              loggingIn = true;
+                            });
                             // TODO show progress indicator while waiting for login
-                            if(signInResult != SignInResult.SUCCESS) {
+                            if (signInResult != SignInResult.SUCCESS) {
+                              setState(() {
+                                loggingIn = false;
+                              });
                               _showLoginAlert(signInResult);
                               emailFocusNode.unfocus();
                               passwordFocusNode.unfocus();
                             } else {
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+                              setState(() {
+                                loggingIn = false;
+                              });
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()));
                             }
-
                           }
-
                         }),
                   )),
               SizedBox(height: 25.0),
@@ -133,8 +146,9 @@ class LoginPageState extends State<LoginPage> {
               Container(
                   width: double.infinity,
                   child: SignInButton(Buttons.Google,
-                      text: 'Log in with Google', onPressed: () async {
-                    googleSignIn().then((value) {
+                      text: 'Sign in with Google', onPressed: () async {
+                    authenticationService.googleSignin().then((value) {
+                      // user cancels google login
                       if (value == null) {
                       } else {
                         Navigator.pushReplacement(
@@ -186,9 +200,9 @@ class LoginPageState extends State<LoginPage> {
   }
 
   String validateEmail(String value) {
-    if(value.isEmpty) {
+    if (value.isEmpty) {
       return 'Email cannot be empty';
-    } else if(!EmailValidator.validate(value)) {
+    } else if (!EmailValidator.validate(value)) {
       return 'Email is not valid';
     } else {
       return null;
@@ -196,7 +210,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   String validatePassword(String value) {
-    if(value.isEmpty) {
+    if (value.isEmpty) {
       return 'Password cannot be empty';
     } else {
       return null;
@@ -204,7 +218,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   bool validateFields() {
-    if(!_loginFormKey.currentState.validate()) {
+    if (!_loginFormKey.currentState.validate()) {
       setState(() {
         _autoValidateMode = AutovalidateMode.onUserInteraction;
       });
@@ -214,7 +228,7 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
-   Future<void> _showLoginAlert(SignInResult signInResult) {
+  Future<void> _showLoginAlert(SignInResult signInResult) {
     switch (signInResult) {
       case SignInResult.USER_NOT_FOUND:
         {
@@ -224,7 +238,8 @@ class LoginPageState extends State<LoginPage> {
               builder: (context) {
                 return AlertDialog(
                   title: Text("User doesn't Exist"),
-                  content: Text("Try using a different email or creating an account"),
+                  content: Text(
+                      "Try using a different email or creating an account"),
                   actions: [
                     TextButton(
                         child: Text('OK',
@@ -309,32 +324,27 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<GoogleSignInAccount> googleSignIn() async {
-    GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
-    try {
-      var account = await _googleSignIn.signIn();
-      return account;
-    } catch (error) {
-      print(error);
-      return null;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SingleChildScrollView(
             physics: NeverScrollableScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _loginPageHeader(),
-                _loginForm(),
-                SizedBox(height: 25.0),
-                _signUpText(),
-                _forgotPasswordText(),
-              ],
-            )));
+            child: Stack(children: [
+              Center(
+                  child: Opacity(
+                      opacity: loggingIn ? 1.0 : 0.0,
+                      child: CircularProgressIndicator())),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _loginPageHeader(),
+                  _loginForm(),
+                  SizedBox(height: 25.0),
+                  _signUpText(),
+                  _forgotPasswordText(),
+                ],
+              )
+            ])));
   }
 }

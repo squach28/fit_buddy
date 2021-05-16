@@ -329,9 +329,6 @@ confirmPasswordFocused = true;
                         child: Text('OK',
                             style: TextStyle(color: Color(0xff567551))),
                         onPressed: () {
-                          setState(() {
-                            signingUp = false;
-                          });
                           Navigator.of(context).pop();
                         })
                   ],
