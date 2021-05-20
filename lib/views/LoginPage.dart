@@ -41,6 +41,7 @@ class LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                textInputAction: TextInputAction.next,
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 validator: validateEmail,
@@ -78,12 +79,16 @@ class LoginPageState extends State<LoginPage> {
                   child: Container(
                     width: double.infinity,
                     height: 50.0,
-                    child: TextButton(
-                        child: Text('Sign In',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold)),
+                    child: ElevatedButton(
+                        child: loggingIn
+                            ? CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white))
+                            : Text('Sign In',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold)),
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Color(0xff91c788)),
@@ -97,15 +102,14 @@ class LoginPageState extends State<LoginPage> {
                         onPressed: () async {
                           if (!validateFields()) {
                           } else {
-                            final email = _emailController.text;
-                            final password = _passwordController.text;
+                            final email = _emailController.text.trim();
+                            final password = _passwordController.text.trim();
                             SignInResult signInResult =
                                 await authenticationService.signIn(
                                     email, password);
                             setState(() {
                               loggingIn = true;
                             });
-                            // TODO show progress indicator while waiting for login
                             if (signInResult != SignInResult.SUCCESS) {
                               setState(() {
                                 loggingIn = false;
