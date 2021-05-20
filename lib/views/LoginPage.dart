@@ -1,6 +1,7 @@
 import 'package:fit_buddy/models/SignInResult.dart';
 import 'package:fit_buddy/services/AuthenticationService.dart';
 import 'package:fit_buddy/views/HomePage.dart';
+import 'package:fit_buddy/views/NavigationPage.dart';
 import 'package:fit_buddy/views/SignupPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
@@ -124,7 +125,7 @@ class LoginPageState extends State<LoginPage> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => HomePage()));
+                                      builder: (context) => NavigationPage()));
                             }
                           }
                         }),
@@ -158,7 +159,7 @@ class LoginPageState extends State<LoginPage> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomePage()));
+                                builder: (context) => NavigationPage()));
                       }
                     });
                   },

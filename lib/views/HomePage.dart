@@ -12,16 +12,6 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-            child: TextButton(
-                child: Text('Sign Out'),
-                onPressed: () {
-                  authenticationService.signOut();
-                  authenticationService.googleSignOut();
-
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                })));
+    return Scaffold(body: Center(child: Text('Home Page')));
   }
 }

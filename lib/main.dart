@@ -1,6 +1,7 @@
 import 'package:fit_buddy/services/AuthenticationService.dart';
 import 'package:fit_buddy/views/HomePage.dart';
 import 'package:fit_buddy/views/LoginPage.dart';
+import 'package:fit_buddy/views/NavigationPage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -28,10 +29,14 @@ class AppState extends State<App> {
             final authenticationService = AuthenticationService();
             if (authenticationService.auth.currentUser != null) {
               return MaterialApp(
-                  debugShowCheckedModeBanner: false, home: HomePage());
+                  theme: ThemeData(primaryColor: Color(0xff91c788)),
+                  debugShowCheckedModeBanner: false,
+                  home: NavigationPage());
             } else {
               return MaterialApp(
-                  debugShowCheckedModeBanner: false, home: LoginPage());
+                  debugShowCheckedModeBanner: false,
+                  theme: ThemeData(primaryColor: Color(0xff91c788)),
+                  home: LoginPage());
             }
           }
 

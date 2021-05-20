@@ -1,4 +1,5 @@
 import 'package:fit_buddy/views/HomePage.dart';
+import 'package:fit_buddy/views/NavigationPage.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fit_buddy/services/AuthenticationService.dart';
@@ -224,7 +225,7 @@ class SignupPageState extends State<SignupPage> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomePage()));
+                                          builder: (context) => NavigationPage()));
                                 }
                               }
                             }),
