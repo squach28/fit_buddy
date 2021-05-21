@@ -1,8 +1,12 @@
+import 'package:fit_buddy/models/SignInResult.dart';
+import 'package:fit_buddy/services/AuthenticationService.dart';
 import 'package:fit_buddy/views/HomePage.dart';
+import 'package:fit_buddy/views/NavigationPage.dart';
 import 'package:fit_buddy/views/SignupPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:email_validator/email_validator.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,8 +15,15 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   final _loginFormKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
+  AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
+
+  final authenticationService = AuthenticationService();
+
+  bool loggingIn = false;
 
   Widget _loginPageHeader() {
     return Padding(
@@ -24,12 +35,17 @@ class LoginPageState extends State<LoginPage> {
   Widget _loginForm() {
     return Form(
         key: _loginFormKey,
+        autovalidateMode: _autoValidateMode,
         child: Padding(
           padding: EdgeInsets.only(left: 20.0, right: 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextFormField(
+                textInputAction: TextInputAction.next,
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                validator: validateEmail,
                 focusNode: emailFocusNode,
                 decoration: InputDecoration(
                   fillColor: Color(0xffebedf0),
@@ -43,6 +59,8 @@ class LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 25.0),
               TextFormField(
+                controller: _passwordController,
+                validator: validatePassword,
                 focusNode: passwordFocusNode,
                 decoration: InputDecoration(
                   fillColor: Color(0xffebedf0),
@@ -53,6 +71,7 @@ class LoginPageState extends State<LoginPage> {
                       borderSide:
                           BorderSide(width: 0, style: BorderStyle.none)),
                 ),
+                obscureText: true,
               ),
               SizedBox(height: 25.0),
               Material(
@@ -61,12 +80,16 @@ class LoginPageState extends State<LoginPage> {
                   child: Container(
                     width: double.infinity,
                     height: 50.0,
-                    child: TextButton(
-                        child: Text('Log In',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold)),
+                    child: ElevatedButton(
+                        child: loggingIn
+                            ? CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white))
+                            : Text('Sign In',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold)),
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Color(0xff91c788)),
@@ -77,7 +100,35 @@ class LoginPageState extends State<LoginPage> {
                             side: BorderSide(width: 0, style: BorderStyle.none),
                           )),
                         ),
-                        onPressed: () {}),
+                        onPressed: () async {
+                          if (!validateFields()) {
+                          } else {
+                            final email = _emailController.text.trim();
+                            final password = _passwordController.text.trim();
+                            SignInResult signInResult =
+                                await authenticationService.signIn(
+                                    email, password);
+                            setState(() {
+                              loggingIn = true;
+                            });
+                            if (signInResult != SignInResult.SUCCESS) {
+                              setState(() {
+                                loggingIn = false;
+                              });
+                              _showLoginAlert(signInResult);
+                              emailFocusNode.unfocus();
+                              passwordFocusNode.unfocus();
+                            } else {
+                              setState(() {
+                                loggingIn = false;
+                              });
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => NavigationPage()));
+                            }
+                          }
+                        }),
                   )),
               SizedBox(height: 25.0),
               Row(children: [
@@ -100,14 +151,15 @@ class LoginPageState extends State<LoginPage> {
               Container(
                   width: double.infinity,
                   child: SignInButton(Buttons.Google,
-                      text: 'Log in with Google', onPressed: () async {
-                    googleSignIn().then((value) {
+                      text: 'Sign in with Google', onPressed: () async {
+                    authenticationService.googleSignin().then((value) {
+                      // user cancels google login
                       if (value == null) {
                       } else {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => HomePage()));
+                                builder: (context) => NavigationPage()));
                       }
                     });
                   },
@@ -152,14 +204,128 @@ class LoginPageState extends State<LoginPage> {
         ]));
   }
 
-  Future<GoogleSignInAccount> googleSignIn() async {
-    GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
-    try {
-      var account = await _googleSignIn.signIn();
-      return account;
-    } catch (error) {
-      print(error);
+  String validateEmail(String value) {
+    if (value.isEmpty) {
+      return 'Email cannot be empty';
+    } else if (!EmailValidator.validate(value)) {
+      return 'Email is not valid';
+    } else {
       return null;
+    }
+  }
+
+  String validatePassword(String value) {
+    if (value.isEmpty) {
+      return 'Password cannot be empty';
+    } else {
+      return null;
+    }
+  }
+
+  bool validateFields() {
+    if (!_loginFormKey.currentState.validate()) {
+      setState(() {
+        _autoValidateMode = AutovalidateMode.onUserInteraction;
+      });
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Future<void> _showLoginAlert(SignInResult signInResult) {
+    switch (signInResult) {
+      case SignInResult.USER_NOT_FOUND:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("User doesn't Exist"),
+                  content: Text(
+                      "Try using a different email or creating an account"),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
+      case SignInResult.WRONG_PASSWORD:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Incorrect Password'),
+                  content: Text('Please try again'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
+
+      case SignInResult.FAIL:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Login Failed'),
+                  content: Text('Please try again later'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
+
+      default:
+        {
+          return showDialog<void>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Account Creation Failed'),
+                  content: Text('Please try again'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK',
+                            style: TextStyle(color: Color(0xff567551))),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        })
+                  ],
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14.0)),
+                );
+              });
+        }
     }
   }
 
@@ -168,16 +334,22 @@ class LoginPageState extends State<LoginPage> {
     return Scaffold(
         body: SingleChildScrollView(
             physics: NeverScrollableScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _loginPageHeader(),
-                _loginForm(),
-                SizedBox(height: 25.0),
-                _signUpText(),
-                _forgotPasswordText(),
-              ],
-            )));
+            child: Stack(children: [
+              Center(
+                  child: Opacity(
+                      opacity: loggingIn ? 1.0 : 0.0,
+                      child: CircularProgressIndicator())),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _loginPageHeader(),
+                  _loginForm(),
+                  SizedBox(height: 25.0),
+                  _signUpText(),
+                  _forgotPasswordText(),
+                ],
+              )
+            ])));
   }
 }

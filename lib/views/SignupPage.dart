@@ -1,3 +1,5 @@
+import 'package:fit_buddy/views/HomePage.dart';
+import 'package:fit_buddy/views/NavigationPage.dart';
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:fit_buddy/services/AuthenticationService.dart';
@@ -126,7 +128,6 @@ class SignupPageState extends State<SignupPage> {
                     },
                   ),
                   Padding(
-                      
                       padding: EdgeInsets.only(top: 5.0, bottom: 1.0),
                       child: Row(children: [
                         Text('Password must be at least 6 characters'),
@@ -139,7 +140,7 @@ class SignupPageState extends State<SignupPage> {
                   TextFormField(
                     onTap: () {
                       setState(() {
-confirmPasswordFocused = true;
+                        confirmPasswordFocused = true;
                       });
                     },
                     controller: _confirmPasswordController,
@@ -179,12 +180,16 @@ confirmPasswordFocused = true;
                       child: Container(
                         width: double.infinity,
                         height: 50.0,
-                        child: TextButton(
-                            child: Text('Sign Up',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold)),
+                        child: ElevatedButton(
+                            child: signingUp
+                                ? CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white))
+                                : Text('Sign Up',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold)),
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   Color(0xff91c788)),
@@ -198,9 +203,11 @@ confirmPasswordFocused = true;
                             ),
                             onPressed: () async {
                               if (validateFields()) {
-                                final firstName = _firstNameController.text;
-                                final email = _emailController.text;
-                                final password = _passwordController.text;
+                                final firstName =
+                                    _firstNameController.text.trim();
+                                final email = _emailController.text.trim();
+                                final password =
+                                    _passwordController.text.trim();
                                 focusScopeNode.unfocus();
                                 SignUpResult signUpResult =
                                     await authenticationService.signUp(
@@ -215,6 +222,10 @@ confirmPasswordFocused = true;
                                   _showSignUpAlert(signUpResult);
                                 } else {
                                   // navigate to home page
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => NavigationPage()));
                                 }
                               }
                             }),
@@ -327,9 +338,6 @@ confirmPasswordFocused = true;
                         child: Text('OK',
                             style: TextStyle(color: Color(0xff567551))),
                         onPressed: () {
-                          setState(() {
-                            signingUp = false;
-                          });
                           Navigator.of(context).pop();
                         })
                   ],
