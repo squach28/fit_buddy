@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class PointsService {
   final firestore = FirebaseFirestore.instance;
 
 
   // creates a profile in the points collection for the current user
+  // parameters: uid - the uid of the user 
+  //             name - the name of the user
   Future<void> createProfile(String uid, String name) {
     CollectionReference points = firestore.collection('points');
     return points.doc(uid).set({
