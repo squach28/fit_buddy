@@ -1,5 +1,6 @@
 import 'package:fit_buddy/views/HomePage.dart';
 import 'package:fit_buddy/views/ProfilePage.dart';
+import 'package:fit_buddy/views/WorkoutsPage.dart';
 import 'package:flutter/material.dart';
 
 class NavigationPage extends StatefulWidget {
@@ -10,7 +11,7 @@ class NavigationPage extends StatefulWidget {
 class NavigationPageState extends State<NavigationPage> {
   int selectedIndex = 0;
 
-  final pages = [HomePage(), HomePage(), ProfilePage()];
+  final pages = [HomePage(), WorkoutsPage(), ProfilePage()];
 
   void _onTabTapped(int index) {
     setState(() {
