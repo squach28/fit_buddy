@@ -87,4 +87,9 @@ class AuthenticationService {
   Future<void> signOut() async {
     await auth.signOut();
   }
+
+  // returns the uid of the current user that is logged in 
+  String retrieveCurrentUserUid() {
+    return auth.currentUser.uid;
+  }
 }
