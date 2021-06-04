@@ -15,4 +15,9 @@ class WorkoutService {
 
   // add the workout to the user's private collection
   Future<void> insertPrivateWorkout(Workout workout, String id) {}
+
+  // get a stream of the workouts in the database
+  Future<QuerySnapshot<Map<String, dynamic>>> getWorkouts() {
+    return firestore.collection('workouts').get();
+  }
 }

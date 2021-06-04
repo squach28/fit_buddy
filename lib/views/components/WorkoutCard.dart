@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
+
 class WorkoutCard extends StatefulWidget {
+
+  final String title;
+  WorkoutCard({this.title});
+  
   @override
   WorkoutCardState createState() => WorkoutCardState();
 }
@@ -22,7 +27,7 @@ class WorkoutCardState extends State<WorkoutCard> {
                     borderRadius: BorderRadius.circular(15.0)),
                 child: Column(children: [
                   ListTile(
-                      title: Text('hi'),
+                      title: Text(widget.title),
                       subtitle: Text(
                           'workout desasdlakjalskdjasdlkasjdalkdjasldkajlaskdjalkdjaldkajsdlkasjdlaskjdalskdjalskdjasldkasjdlaksjdalskdjaslkdjscription',
                           maxLines: 2),
