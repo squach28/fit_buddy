@@ -22,21 +22,20 @@ class WorkoutsPageState extends State<WorkoutsPage> {
     return FutureBuilder(
         future: workoutService.getWorkouts(),
         builder: (context, snapshot) {
-          final workouts = snapshot.data.docs;
-
-          if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: workouts.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-              return Padding(
-                padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                child: WorkoutCard(
-                title: workouts.elementAt(index).get('title'),
-              ));
-            });
-          } else {
+          if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
+          } else {
+            final workouts = snapshot.data.docs;
+            return ListView.builder(
+                itemCount: workouts.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return Padding(
+                      padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                      child: WorkoutCard(
+                        title: workouts.elementAt(index).get('title'),
+                      ));
+                });
           }
         });
   }
@@ -53,10 +52,7 @@ class WorkoutsPageState extends State<WorkoutsPage> {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      workoutsPageHeader(),
-                      workoutsList()
-                    ]),
+                    children: [workoutsPageHeader(), workoutsList()]),
               )))),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
