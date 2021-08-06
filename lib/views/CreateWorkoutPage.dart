@@ -24,7 +24,10 @@ class AddWorkoutPageState extends State<AddWorkoutPage> {
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Details'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                      child: Text('Details', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    ),
                     TextFormField(
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.name,
@@ -57,7 +60,11 @@ class AddWorkoutPageState extends State<AddWorkoutPage> {
                                     width: 0, style: BorderStyle.none)),
                           ),
                         )),
-                    Text('Sets'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+                      child: Text('Sets', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
+                    ),
+                    
                     Row(
                       children: [
                         Expanded(child: Text('Number of sets')),
@@ -80,14 +87,16 @@ class AddWorkoutPageState extends State<AddWorkoutPage> {
                               }).toList(),
                             )),
                       ],
-                    ),
-                    Text('Exercises'),
+                    ), 
                     ListView.builder(
                         shrinkWrap: true,
-                        itemCount: 2,
+                        itemCount: 3,
                         itemBuilder: (context, index) {
                           return ExerciseCard();
-                        }),
+                        }), 
+                    Center(child: TextButton(child: Text('Create Workout'), onPressed: () {
+
+                    })),
                   ],
                 )))));
   }

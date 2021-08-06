@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fit_buddy/services/WorkoutService.dart';
-import 'package:fit_buddy/views/AddWorkoutPage.dart';
+import 'package:fit_buddy/views/CreateWorkoutPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fit_buddy/views/components/WorkoutCard.dart';
 
