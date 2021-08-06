@@ -1,5 +1,5 @@
 import 'package:fit_buddy/models/Exercise.dart';
-
+// class that contains the information about a workout
 class Workout {
   final String title;
   final String description;

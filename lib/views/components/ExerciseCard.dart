@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fit_buddy/models/ExerciseType.dart';
 
+// represents a widget for an exercise card
+// meant for a specific exercise, as opposed to a workout (workout contains list of exercises)
 class ExerciseCard extends StatefulWidget {
   @override
   ExerciseCardState createState() => ExerciseCardState();
@@ -9,6 +11,8 @@ class ExerciseCard extends StatefulWidget {
 class ExerciseCardState extends State<ExerciseCard> {
   ExerciseType exerciseType = ExerciseType.TIMED;
 
+  // widget to represent how much of the exercise should be done
+  // param: exerciseType - an enum that represents the type of the exercise
   Widget exerciseAmountWidget(ExerciseType exerciseType) {
     switch (exerciseType) {
       case ExerciseType.TIMED:

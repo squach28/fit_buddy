@@ -5,6 +5,7 @@ enum ExerciseType {
   REPS
 }
 
+// extension that parses the specified enum into a String
 extension ParseToString on ExerciseType {
   String toShortString() {
     String exerciseType = this.toString().split('.').last;
