@@ -29,13 +29,15 @@ class AppState extends State<App> {
             final authenticationService = AuthenticationService();
             if (authenticationService.auth.currentUser != null) {
               return MaterialApp(
-                  theme: ThemeData(primaryColor: Color(0xff91c788)),
+                  //theme: ThemeData(primaryColor: Color(0xff91c788), textTheme: Typography.whiteCupertino),
+                                    theme: ThemeData(scaffoldBackgroundColor: Color(0xff222831), primaryColor: Color(0xff267055), textTheme: Typography.whiteRedwoodCity),
+
                   debugShowCheckedModeBanner: false,
                   home: NavigationPage());
             } else {
               return MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  theme: ThemeData(primaryColor: Color(0xff91c788)),
+                  theme: ThemeData(scaffoldBackgroundColor: Color(0xff222831), primaryColor: Color(0xff267055), textTheme: Typography.whiteRedwoodCity),
                   home: LoginPage());
             }
           }
