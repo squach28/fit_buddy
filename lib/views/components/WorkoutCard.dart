@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class WorkoutCard extends StatefulWidget {
 
   final String title;
-  WorkoutCard({this.title});
+  final String description;
+  WorkoutCard({this.title, this.description});
   
   @override
   WorkoutCardState createState() => WorkoutCardState();
@@ -29,7 +30,7 @@ class WorkoutCardState extends State<WorkoutCard> {
                   ListTile(
                       title: Text(widget.title),
                       subtitle: Text(
-                          'workout desasdlakjalskdjasdlkasjdalkdjasldkajlaskdjalkdjaldkajsdlkasjdlaskjdalskdjalskdjasldkasjdlaksjdalskdjaslkdjscription',
+                          widget.description,
                           maxLines: 2),
                       isThreeLine: true,
                       trailing: IconButton(

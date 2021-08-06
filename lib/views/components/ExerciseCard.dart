@@ -4,6 +4,7 @@ import 'package:fit_buddy/models/ExerciseType.dart';
 // represents a widget for an exercise card
 // meant for a specific exercise, as opposed to a workout (workout contains list of exercises)
 class ExerciseCard extends StatefulWidget {
+
   @override
   ExerciseCardState createState() => ExerciseCardState();
 }
@@ -11,6 +12,20 @@ class ExerciseCard extends StatefulWidget {
 class ExerciseCardState extends State<ExerciseCard> {
   ExerciseType exerciseType = ExerciseType.TIMED;
 
+  final exerciseNameController = TextEditingController();
+  String exerciseName;
+  // TODO how do i pass exerciseName to widget without using a final String in ExerciseCard lol
+  @override 
+  void initState() {
+    super.initState();
+    exerciseNameController.addListener(() {
+      setState(() {
+        this.exerciseName = exerciseNameController.text;
+        print(this.exerciseName);
+      });
+    });
+  }
+  
   // widget to represent how much of the exercise should be done
   // param: exerciseType - an enum that represents the type of the exercise
   Widget exerciseAmountWidget(ExerciseType exerciseType) {
@@ -53,7 +68,7 @@ class ExerciseCardState extends State<ExerciseCard> {
   Widget build(BuildContext context) {
     return Container(
         width: MediaQuery.of(context).size.width / 1.1,
-        height: MediaQuery.of(context).size.height / 4,
+        height: MediaQuery.of(context).size.height / 3.5,
         child: Card(
           elevation: 2.5,
           shape:
@@ -64,7 +79,8 @@ class ExerciseCardState extends State<ExerciseCard> {
               Padding(
                   padding: EdgeInsets.all(20.0),
                   child: TextFormField(
-                    textInputAction: TextInputAction.next,
+                    controller: this.exerciseNameController,
+                    textInputAction: TextInputAction.done,
                     keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       filled: true,

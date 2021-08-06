@@ -34,6 +34,7 @@ class WorkoutsPageState extends State<WorkoutsPage> {
                       padding: EdgeInsets.only(left: 10.0, right: 10.0),
                       child: WorkoutCard(
                         title: workouts.elementAt(index).get('title'),
+                        description: workouts.elementAt(index).get('description'),
                       ));
                 });
           }
