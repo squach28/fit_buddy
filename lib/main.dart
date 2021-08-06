@@ -17,6 +17,14 @@ class App extends StatefulWidget {
 
 class AppState extends State<App> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  final ThemeData theme = new ThemeData(
+    scaffoldBackgroundColor: Color(0xff222831),
+    primaryColor: Color(0xff267055),
+    textTheme: Typography.whiteRedwoodCity,
+    primaryColorDark: Color(0xff222831),
+    accentColor: Colors.white,
+    accentIconTheme: IconThemeData(),
+  );
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -29,15 +37,16 @@ class AppState extends State<App> {
             final authenticationService = AuthenticationService();
             if (authenticationService.auth.currentUser != null) {
               return MaterialApp(
+                  themeMode: ThemeMode.dark,
                   //theme: ThemeData(primaryColor: Color(0xff91c788), textTheme: Typography.whiteCupertino),
-                                    theme: ThemeData(scaffoldBackgroundColor: Color(0xff222831), primaryColor: Color(0xff267055), textTheme: Typography.whiteRedwoodCity),
-
+                  theme: theme,
                   debugShowCheckedModeBanner: false,
                   home: NavigationPage());
             } else {
               return MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  theme: ThemeData(scaffoldBackgroundColor: Color(0xff222831), primaryColor: Color(0xff267055), textTheme: Typography.whiteRedwoodCity),
+                  themeMode: ThemeMode.dark,
+                  theme: theme,
                   home: LoginPage());
             }
           }

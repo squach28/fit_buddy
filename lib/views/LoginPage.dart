@@ -29,7 +29,8 @@ class LoginPageState extends State<LoginPage> {
     return Padding(
         padding:
             EdgeInsets.only(left: 25.0, top: 50.0, bottom: 20.0, right: 20.0),
-        child: Text('Log In', style: TextStyle(fontSize: 25.0, color: Color(0xffebedf0))));
+        child: Text('Log In',
+            style: TextStyle(fontSize: 25.0, color: Color(0xffebedf0))));
   }
 
   Widget _loginForm() {
@@ -47,6 +48,7 @@ class LoginPageState extends State<LoginPage> {
                 keyboardType: TextInputType.emailAddress,
                 validator: validateEmail,
                 focusNode: emailFocusNode,
+                style: TextStyle(color: Theme.of(context).primaryColorDark),
                 decoration: InputDecoration(
                   fillColor: Color(0xffebedf0),
                   filled: true,
@@ -62,6 +64,7 @@ class LoginPageState extends State<LoginPage> {
                 controller: _passwordController,
                 validator: validatePassword,
                 focusNode: passwordFocusNode,
+                style: TextStyle(color: Theme.of(context).primaryColorDark),
                 decoration: InputDecoration(
                   fillColor: Color(0xffebedf0),
                   filled: true,
@@ -73,7 +76,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 obscureText: true,
               ),
-              SizedBox(height: 25.0),
+              SizedBox(height: 50.0),
               Material(
                   elevation: 12.0,
                   borderRadius: BorderRadius.circular(16.0),
@@ -183,7 +186,8 @@ class LoginPageState extends State<LoginPage> {
               )),
           TextButton(
               child: Text('Sign Up',
-                  style: TextStyle(fontSize: 16.0, color: Theme.of(context).primaryColor)),
+                  style: TextStyle(
+                      fontSize: 16.0, color: Theme.of(context).primaryColor)),
               onPressed: () {
                 emailFocusNode.unfocus();
                 passwordFocusNode.unfocus();
@@ -199,7 +203,8 @@ class LoginPageState extends State<LoginPage> {
         child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           TextButton(
               child: Text('Forgot your password?',
-                  style: TextStyle(fontSize: 16.0, color: Theme.of(context).primaryColor)),
+                  style: TextStyle(
+                      fontSize: 16.0, color: Theme.of(context).primaryColor)),
               onPressed: () {}),
         ]));
   }

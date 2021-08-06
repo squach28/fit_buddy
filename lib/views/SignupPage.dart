@@ -72,6 +72,7 @@ class SignupPageState extends State<SignupPage> {
                     keyboardType: TextInputType.name,
                     textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.next,
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
                       filled: true,
@@ -92,6 +93,7 @@ class SignupPageState extends State<SignupPage> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
                       filled: true,
@@ -112,6 +114,7 @@ class SignupPageState extends State<SignupPage> {
                     controller: _passwordController,
                     textInputAction: TextInputAction.next,
                     obscureText: true,
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
                       filled: true,
@@ -146,6 +149,7 @@ class SignupPageState extends State<SignupPage> {
                     controller: _confirmPasswordController,
                     textInputAction: TextInputAction.done,
                     obscureText: true,
+                    style: TextStyle(color: Theme.of(context).primaryColorDark),
                     decoration: InputDecoration(
                       fillColor: Color(0xffebedf0),
                       filled: true,
@@ -192,7 +196,7 @@ class SignupPageState extends State<SignupPage> {
                                         fontWeight: FontWeight.bold)),
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
-                                  Color(0xff91c788)),
+                                  Theme.of(context).primaryColor),
                               shape: MaterialStateProperty.all<
                                       RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
@@ -225,7 +229,8 @@ class SignupPageState extends State<SignupPage> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => NavigationPage()));
+                                          builder: (context) =>
+                                              NavigationPage()));
                                 }
                               }
                             }),
@@ -422,9 +427,6 @@ class SignupPageState extends State<SignupPage> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
-          ),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
